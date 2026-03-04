@@ -35,24 +35,3 @@ System opiera się na trzech filarach informacyjnych:
 2.  **Real-time Flight/Traffic Data:** Monitoring opóźnień i blokad transportowych w czasie rzeczywistym.
 3.  **Global Incident Feeds:** Śledzenie globalnych doniesień o zdarzeniach losowych i pogodowych.
 
----
-
-## Dlaczego Telemach?
-
-W mitologii Telemach musiał dorosnąć i stawić czoła wyzwaniom pod nieobecność ojca. Nasz projekt realizuje tę samą misję: daje podróżnikowi narzędzia do podejmowania dojrzałych, bezpiecznych decyzji w świecie, który bywa nieprzewidywalny.
-
-> "Nie sztuką jest wyjechać. Sztuką jest wiedzieć, jak bezpiecznie wrócić."
-
----
-
-## Instalacja i Konfiguracja (Przykład)
-
-```bash
-# Sklonuj repozytorium
-git clone [https://github.com/twoj-login/telemach.git](https://github.com/twoj-login/telemach.git)
-
-# Zainstaluj zależności
-pip install -r requirements.txt
-
-# Skonfiguruj klucze API (w tym dostęp do danych gov)
-cp .env.example .env
