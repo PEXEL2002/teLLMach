@@ -2,6 +2,11 @@
 
 **Telemach** to zaawansowany system wspomagania podróży, który łączy funkcje klasycznego planera turystycznego z dynamicznym systemem zarządzania kryzysowego. Podczas gdy inne aplikacje pokazują, gdzie zjeść obiad, Telemach dba o to, abyś miał jak wrócić do domu, gdy sytuacja na świecie ulegnie zmianie.
 
+## Zespół:
+- Jakub Dobrzański - Kierownik zespołu, Machine learning, Devops
+- Bartłomiej Kuk - Frontend
+- Mateusz Andrzejewski - Backend
+
 ## 1. Opis działania i schemat logiczny
 
 System działa jako *proaktywny agent AI*, który integruje dane z wielu zewnętrznych źródeł (API linii lotniczych, hoteli, map oraz serwisów rządowych/geopolitycznych).
