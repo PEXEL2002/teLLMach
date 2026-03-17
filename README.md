@@ -56,22 +56,24 @@ System działa jako *proaktywny agent AI*, który integruje dane z wielu zewnęt
 
 | *Warstwa*          | *Technologia*                                               |
 | -------------------- | ------------------------------------------------------------- |
-| *Backend*          | Python (FastAPI lub Django)                                   |
-| *Frontend*         |                                                               |
+| *Backend*          | Python (FastAPI)                                              |
+| *Frontend*         | React                                                         |
 | *Silnik AI*        | Gemini                                                        |
-| *Integracje (API)* | skyscanner (loty), Booking.com (hotele), Google Maps (trasy). |
-| *Konteneryzacja*   | Docker + Kubernetes (dla stabilności).                        |
+| *Integracje (API)* | skyscanner (loty), Booking.com (hotele), Google Maps (trasy), Qdrant|
+| *Konteneryzacja*   | Docker + Kubernetes                         |
 
 ---
-## 4. Baza danych
-Wektorowa baza danych (Qdrant), do semantycznego wyszukiwania polecanych atrakcji podczas wakacji.
+## 4. Bazy danych
+
+PostgreSQL do zapisywania podrozy użytkowników, w celu wysyłania alertów na temat potencjalnych niebezpieczeństw.
+Wektorowa baza danych (Qdrant), do semantycznego wyszukiwania polecanych kierunków lub atrakcji podczas wakacji.
 
 ---
 
 ## 5. Bezpieczeństwo
 
 
-- *Szyfrowanie:* Wszystkie dane użytkowników (szczególnie paszporty/dowody) muszą być szyfrowane algorytmem *AES-256*.
+- *Szyfrowanie:* Wszystkie dane użytkowników muszą być szyfrowane algorytmem *AES-256*.
     
 - *Autoryzacja:* Standard **OAuth 2.0 
     
