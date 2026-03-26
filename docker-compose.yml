@@ -37,6 +37,16 @@ services:
       - postgres
     networks:
       - tellmach_network
+  frontend:
+    build: ./frontend
+    container_name: tellmach_ui
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules # To chroni biblioteki wewnątrz kontenera
+    networks:
+      - tellmach_network
 networks:
   tellmach_network:
     driver: bridge
