@@ -26,7 +26,8 @@ export function RegisterForm({
   onSubmit,
 }: RegisterFormProps) {
   const [touched, setTouched] = useState<Record<keyof RegisterPayload, boolean>>({
-    username: false,
+    imie: false,
+    nazwisko: false,
     email: false,
     password: false,
     confirmPassword: false,
@@ -48,19 +49,35 @@ export function RegisterForm({
   return (
     <form className="form-switch space-y-4" onSubmit={onSubmit} noValidate>
       <label className="block space-y-2">
-        <span className="text-sm text-discord-muted">Nazwa uzytkownika</span>
+        <span className="text-sm text-discord-muted">Imie</span>
         <input
           className={`w-full rounded-xl border bg-discord-card px-4 py-3 text-sm outline-none transition focus:border-discord-accent ${
-            showError('username') ? 'border-red-400/80' : 'border-discord-border'
+            showError('imie') ? 'border-red-400/80' : 'border-discord-border'
           }`}
-          value={value.username}
-          onChange={handleFieldChange('username')}
-          onBlur={handleFieldBlur('username')}
-          placeholder="nowy_uzytkownik"
-          autoComplete="username"
-          aria-invalid={showError('username')}
+          value={value.imie}
+          onChange={handleFieldChange('imie')}
+          onBlur={handleFieldBlur('imie')}
+          placeholder="Jan"
+          autoComplete="given-name"
+          aria-invalid={showError('imie')}
         />
-        {showError('username') ? <p className="text-xs text-red-300">{errors.username}</p> : null}
+        {showError('imie') ? <p className="text-xs text-red-300">{errors.imie}</p> : null}
+      </label>
+
+      <label className="block space-y-2">
+        <span className="text-sm text-discord-muted">Nazwisko</span>
+        <input
+          className={`w-full rounded-xl border bg-discord-card px-4 py-3 text-sm outline-none transition focus:border-discord-accent ${
+            showError('nazwisko') ? 'border-red-400/80' : 'border-discord-border'
+          }`}
+          value={value.nazwisko}
+          onChange={handleFieldChange('nazwisko')}
+          onBlur={handleFieldBlur('nazwisko')}
+          placeholder="Kowalski"
+          autoComplete="family-name"
+          aria-invalid={showError('nazwisko')}
+        />
+        {showError('nazwisko') ? <p className="text-xs text-red-300">{errors.nazwisko}</p> : null}
       </label>
 
       <label className="block space-y-2">
@@ -156,3 +173,4 @@ export function RegisterForm({
     </form>
   )
 }
+

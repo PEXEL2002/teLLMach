@@ -18,13 +18,14 @@ export function LoginForm({ value, isLoading, onChange, onSubmit }: LoginFormPro
   return (
     <form className="form-switch space-y-4" onSubmit={onSubmit} noValidate>
       <label className="block space-y-2">
-        <span className="text-sm text-discord-muted">Email lub nazwa</span>
+        <span className="text-sm text-discord-muted">Email</span>
         <input
+          type="email"
           className="w-full rounded-xl border border-discord-border bg-discord-card px-4 py-3 text-sm outline-none transition focus:border-discord-accent"
-          value={value.emailOrUsername}
-          onChange={handleFieldChange('emailOrUsername')}
-          placeholder="admin"
-          autoComplete="username"
+          value={value.email}
+          onChange={handleFieldChange('email')}
+          placeholder="mail@domena.pl"
+          autoComplete="email"
         />
       </label>
 
@@ -35,7 +36,7 @@ export function LoginForm({ value, isLoading, onChange, onSubmit }: LoginFormPro
           className="w-full rounded-xl border border-discord-border bg-discord-card px-4 py-3 text-sm outline-none transition focus:border-discord-accent"
           value={value.password}
           onChange={handleFieldChange('password')}
-          placeholder="admin"
+          placeholder="Twoje haslo"
           autoComplete="current-password"
         />
       </label>
@@ -59,3 +60,4 @@ export function LoginForm({ value, isLoading, onChange, onSubmit }: LoginFormPro
     </form>
   )
 }
+

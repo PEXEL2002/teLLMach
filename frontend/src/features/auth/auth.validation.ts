@@ -3,12 +3,13 @@ import type { LoginPayload, RegisterPayload } from './auth.types'
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export type LoginFieldErrors = {
-  emailOrUsername?: string
+  email?: string
   password?: string
 }
 
 export type RegisterFieldErrors = {
-  username?: string
+  imie?: string
+  nazwisko?: string
   email?: string
   password?: string
   confirmPassword?: string
@@ -17,10 +18,10 @@ export type RegisterFieldErrors = {
 export const getLoginFieldErrors = (payload: LoginPayload): LoginFieldErrors => {
   const errors: LoginFieldErrors = {}
 
-  if (!payload.emailOrUsername.trim()) {
-    errors.emailOrUsername = 'Podaj email albo nazwe uzytkownika.'
-  } else if (payload.emailOrUsername.includes('@') && !emailRegex.test(payload.emailOrUsername)) {
-    errors.emailOrUsername = 'Podaj poprawny adres email.'
+  if (!payload.email.trim()) {
+    errors.email = 'Podaj email.'
+  } else if (!emailRegex.test(payload.email)) {
+    errors.email = 'Podaj poprawny adres email.'
   }
 
   if (payload.password.length < 4) {
@@ -33,8 +34,12 @@ export const getLoginFieldErrors = (payload: LoginPayload): LoginFieldErrors => 
 export const getRegisterFieldErrors = (payload: RegisterPayload): RegisterFieldErrors => {
   const errors: RegisterFieldErrors = {}
 
-  if (!payload.username.trim()) {
-    errors.username = 'Nazwa uzytkownika jest wymagana.'
+  if (!payload.imie.trim()) {
+    errors.imie = 'Imie jest wymagane.'
+  }
+
+  if (!payload.nazwisko.trim()) {
+    errors.nazwisko = 'Nazwisko jest wymagane.'
   }
 
   if (!emailRegex.test(payload.email)) {
@@ -54,7 +59,7 @@ export const getRegisterFieldErrors = (payload: RegisterPayload): RegisterFieldE
 
 export const validateLogin = (payload: LoginPayload): string | null => {
   const errors = getLoginFieldErrors(payload)
-  if (errors.emailOrUsername) return errors.emailOrUsername
+  if (errors.email) return errors.email
   if (errors.password) return errors.password
 
   return null
@@ -62,10 +67,12 @@ export const validateLogin = (payload: LoginPayload): string | null => {
 
 export const validateRegister = (payload: RegisterPayload): string | null => {
   const errors = getRegisterFieldErrors(payload)
-  if (errors.username) return errors.username
+  if (errors.imie) return errors.imie
+  if (errors.nazwisko) return errors.nazwisko
   if (errors.email) return errors.email
   if (errors.password) return errors.password
   if (errors.confirmPassword) return errors.confirmPassword
 
   return null
 }
+

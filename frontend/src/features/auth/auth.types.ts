@@ -1,17 +1,28 @@
 export type AuthTab = 'login' | 'register'
 
 export type LoginPayload = {
-  emailOrUsername: string
+  email: string
   password: string
 }
 
 export type RegisterPayload = {
-  username: string
+  imie: string
+  nazwisko: string
   email: string
   password: string
   confirmPassword: string
 }
 
 export type SessionUser = {
-  username: string
+  id: number
+  imie: string
+  nazwisko: string
+  email: string
+}
+
+export type TokenResponse = {
+  access_token: string
+  token_type: string
+  user_id: number
+  email: string
 }

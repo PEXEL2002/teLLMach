@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 
 import { showSweetAlert } from './features/alerts/SweetAlertClient'
-import { mockAuthApi } from './features/auth/auth.api.mock'
-import { clearSession, getStoredSession, saveSession } from './features/auth/auth.storage'
-import type { AuthTab, LoginPayload, RegisterPayload } from './features/auth/auth.types'
+import { authApi } from './features/auth/auth.api'
+import { clearSession, getStoredSession, saveSession, getToken } from './features/auth/auth.storage'
+import type { AuthTab, LoginPayload, RegisterPayload, SessionUser } from './features/auth/auth.types'
 import {
   getRegisterFieldErrors,
   validateLogin,
@@ -17,12 +17,13 @@ import { ForgotPasswordPage } from './features/auth/pages/ForgotPasswordPage'
 import { DashboardView } from './features/dashboard/DashboardView'
 
 const emptyLoginForm: LoginPayload = {
-  emailOrUsername: '',
+  email: '',
   password: '',
 }
 
 const emptyRegisterForm: RegisterPayload = {
-  username: '',
+  imie: '',
+  nazwisko: '',
   email: '',
   password: '',
   confirmPassword: '',
@@ -34,27 +35,28 @@ function App() {
   const [tab, setTab] = useState<AuthTab>('login')
   const [isLoading, setIsLoading] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [userName, setUserName] = useState('')
+  const [currentUser, setCurrentUser] = useState<SessionUser | null>(null)
   const [loginForm, setLoginForm] = useState<LoginPayload>(emptyLoginForm)
   const [registerForm, setRegisterForm] = useState<RegisterPayload>(emptyRegisterForm)
   const [isTermsAccepted, setIsTermsAccepted] = useState(false)
 
   const registerErrors = getRegisterFieldErrors(registerForm)
   const isRegisterInvalid = Boolean(
-    registerErrors.username ||
+    registerErrors.imie ||
+      registerErrors.nazwisko ||
       registerErrors.email ||
       registerErrors.password ||
       registerErrors.confirmPassword,
   )
 
   useEffect(() => {
-    const session = getStoredSession()
-    if (!session) {
+    const storedSession = getStoredSession()
+    if (!storedSession) {
       return
     }
 
     setIsLoggedIn(true)
-    setUserName(session.username)
+    setCurrentUser(storedSession.user)
   }, [])
 
   const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
@@ -72,9 +74,30 @@ function App() {
 
     setIsLoading(true)
     try {
-      const session = await mockAuthApi.login(loginForm)
-      saveSession(session)
-      setUserName(session.username)
+      const tokenResponse = await authApi.login(loginForm)
+      console.log('Login response:', tokenResponse)
+
+      // Get full user info
+      try {
+        const fullUser = await authApi.getCurrentUser(tokenResponse.access_token)
+        console.log('Full user from /me:', fullUser)
+        saveSession(fullUser, tokenResponse.access_token)
+        setCurrentUser(fullUser)
+      } catch (meError) {
+        console.error('/me endpoint failed:', meError)
+
+        // Fallback: create user from login response
+        const user: SessionUser = {
+          id: tokenResponse.user_id,
+          imie: 'User',
+          nazwisko: '',
+          email: tokenResponse.email,
+        }
+        console.log('Using fallback user:', user)
+        saveSession(user, tokenResponse.access_token)
+        setCurrentUser(user)
+      }
+
       setIsLoggedIn(true)
 
       await showSweetAlert({
@@ -83,6 +106,7 @@ function App() {
         text: 'Witaj! Trwa przekierowanie do dashboardu.',
       })
     } catch (error) {
+      console.error('Login error:', error)
       await showSweetAlert({
         icon: 'error',
         title: 'Logowanie nieudane',
@@ -117,21 +141,21 @@ function App() {
 
     setIsLoading(true)
     try {
-      await mockAuthApi.register(registerForm)
+      const newUser = await authApi.register(registerForm)
       await showSweetAlert({
         icon: 'success',
         title: 'Konto utworzone',
-        text: 'Rejestracja zakonczona sukcesem. Mozesz sie teraz zalogowac.',
+        text: `Witaj ${newUser.imie}! Rejestracja zakonczona sukcesem. Mozesz sie teraz zalogowac.`,
       })
 
       setRegisterForm(emptyRegisterForm)
       setIsTermsAccepted(false)
       setTab('login')
-    } catch {
+    } catch (error) {
       await showSweetAlert({
         icon: 'error',
         title: 'Rejestracja nieudana',
-        text: 'Sprobuj ponownie za chwile.',
+        text: error instanceof Error ? error.message : 'Sprobuj ponownie za chwile.',
       })
     } finally {
       setIsLoading(false)
@@ -141,12 +165,12 @@ function App() {
   const handleLogout = () => {
     clearSession()
     setIsLoggedIn(false)
-    setUserName('')
+    setCurrentUser(null)
     setLoginForm(emptyLoginForm)
   }
 
-  if (isLoggedIn) {
-    return <DashboardView userName={userName} onLogout={handleLogout} />
+  if (isLoggedIn && currentUser) {
+    return <DashboardView userName={`${currentUser.imie} ${currentUser.nazwisko}`} onLogout={handleLogout} />
   }
 
   if (isForgotPasswordRoute) {

@@ -41,16 +41,22 @@ def get_db():
 
 def get_current_user(authorization: Optional[str] = Header(None), db: Session = Depends(get_db)) -> User:
     """Extract and validate JWT token from Authorization header"""
+    print(f"DEBUG: Authorization header: {authorization}")
+
     if not authorization or not authorization.startswith("Bearer "):
+        print("DEBUG: Missing/invalid auth header")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Missing or invalid authorization header"
         )
 
     token = authorization.split(" ")[1]
+    print(f"DEBUG: Token extracted: {token[:50]}...")
     payload = verify_token(token)
+    print(f"DEBUG: Token payload: {payload}")
 
     if payload is None:
+        print("DEBUG: Token verification failed")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or expired token"
