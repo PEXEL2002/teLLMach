@@ -83,3 +83,7 @@ Wektorowa baza danych (Qdrant), do semantycznego wyszukiwania polecanych kierunk
     
 
 ---
+
+## 6. Dokumentacja API
+
+Dokumentacja endpointów auth znajduje się w osobnym pliku: [docs/auth-endpoints.md](docs/auth-endpoints.md)
