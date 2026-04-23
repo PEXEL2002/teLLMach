@@ -8,7 +8,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -45,6 +45,8 @@ services:
       - ./backend:/app
     environment:
       - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}
+      - SECRET_KEY=tellmach-super-secret-jwt-key-change-in-production
+      - ENCRYPTION_KEY=LyIFaP_p1qkxGLd_6JctZzYhvvnSG5-K1mKJVCZLJdk=
     depends_on:
       postgres:
         condition: service_healthy
