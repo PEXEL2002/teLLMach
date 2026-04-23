@@ -5,3 +5,6 @@ psycopg2-binary==2.9.9
 qdrant-client==1.7.3
 python-multipart==0.0.6
 pydantic-settings==2.1.0
+passlib[bcrypt]==1.7.4
+pydantic[email]==2.5.3
+bcrypt==4.1.2
