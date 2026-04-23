@@ -112,6 +112,7 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
+    new_user.decrypt_fields()  # Decrypt for response
 
     return new_user
 
