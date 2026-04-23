@@ -45,6 +45,7 @@ services:
       - ./backend:/app
     environment:
       - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}
+      - SECRET_KEY=tellmach-super-secret-jwt-key-change-in-production
     depends_on:
       postgres:
         condition: service_healthy

@@ -19,6 +19,13 @@ class UserOut(BaseModel):
         from_attributes = True
 
 
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user_id: int
+    email: str
+
+
 class PlaceCreate(BaseModel):
     miejsce: str
     pobyt_od: date

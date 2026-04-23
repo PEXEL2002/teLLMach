@@ -1,13 +1,14 @@
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException, status, Header
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 import os
+from typing import Optional
 
 from database import engine, SessionLocal, Base
 from models import User, Miejsca
-from schemas import UserCreate, UserOut, PlaceCreate, PlaceOut
-from auth import hash_password, verify_password
+from schemas import UserCreate, UserOut, PlaceCreate, PlaceOut, Token
+from auth import hash_password, verify_password, create_access_token, verify_token
 
 # Create tables on startup
 Base.metadata.create_all(bind=engine)
@@ -36,6 +37,35 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+def get_current_user(authorization: Optional[str] = Header(None), db: Session = Depends(get_db)) -> User:
+    """Extract and validate JWT token from Authorization header"""
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Missing or invalid authorization header"
+        )
+
+    token = authorization.split(" ")[1]
+    payload = verify_token(token)
+
+    if payload is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired token"
+        )
+
+    user_id = payload.get("user_id")
+    user = db.query(User).filter(User.id == user_id).first()
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+
+    return user
 
 
 @app.get("/")
@@ -86,9 +116,9 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
     return new_user
 
 
-@app.post("/login", response_model=dict)
+@app.post("/login", response_model=Token)
 def login(email: str, password: str, db: Session = Depends(get_db)):
-    """Login with email and password"""
+    """Login with email and password - returns JWT token"""
     user = db.query(User).filter(User.email == email).first()
 
     if not user or not verify_password(password, user.hashed_password):
@@ -97,13 +127,20 @@ def login(email: str, password: str, db: Session = Depends(get_db)):
             detail="Invalid credentials"
         )
 
+    access_token = create_access_token(user.id, user.email)
+
     return {
-        "message": "Login successful",
+        "access_token": access_token,
+        "token_type": "bearer",
         "user_id": user.id,
-        "email": user.email,
-        "imie": user.imie,
-        "nazwisko": user.nazwisko
+        "email": user.email
     }
+
+
+@app.get("/me", response_model=UserOut)
+def get_current_user_info(current_user: User = Depends(get_current_user)):
+    """Get current authenticated user info (requires valid JWT token)"""
+    return current_user
 
 
 @app.get("/users/{user_id}", response_model=UserOut)
