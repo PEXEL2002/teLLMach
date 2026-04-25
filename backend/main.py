@@ -4,6 +4,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 import os
 from typing import Optional
+from pydantic import BaseModel
+import uuid
 
 from database import engine, SessionLocal, Base
 from models import User, Miejsca
@@ -37,6 +39,15 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+class ChatRequest(BaseModel):
+    message: str
+
+
+class ChatResponse(BaseModel):
+    id: str
+    content: str
 
 
 def get_current_user(authorization: Optional[str] = Header(None), db: Session = Depends(get_db)) -> User:
@@ -160,3 +171,35 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
             detail="User not found"
         )
     return user
+
+
+@app.post("/api/chat", response_model=ChatResponse)
+def chat(chat_request: ChatRequest, current_user: User = Depends(get_current_user)):
+    """AI Travel Assistant chat endpoint - sends message and receives response"""
+    message = chat_request.message.strip()
+
+    if not message:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Message cannot be empty"
+        )
+
+    # Placeholder AI response - in production this would call an LLM service
+    responses = {
+        "gdzie": "Mogę Ci pomóc zaplanować podróż! Gdzie chciałbyś pojechać?",
+        "pogoda": "Aby sprawdzić pogodę w konkretnym miejscu, powiedz mi gdzie Cię interesuje.",
+        "hotel": "Chętnie pomogę Ci znaleźć hotel. Powiedz mi jakie są Twoje preferencje i budżet.",
+        "loty": "Mogę Ci pomóc znaleźć loty. Powiedz mi skąd i dokąd chcesz lecieć oraz kiedy.",
+        "atrakcje": "Jakie atrakcje Cię interesują? Mogę zasugerować wiele fajnych miejsc.",
+    }
+
+    # Simple keyword matching for demo purposes
+    response_content = next(
+        (v for k, v in responses.items() if k in message.lower()),
+        f"Interesująca wiadomość! Rozumiem, że mówisz o: \"{message}\". Mogę Ci pomóc w planowaniu podróży."
+    )
+
+    return ChatResponse(
+        id=str(uuid.uuid4()),
+        content=response_content
+    )
