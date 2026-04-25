@@ -4,6 +4,40 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Space Grotesk', 'sans-serif'],
+            },
+            colors: {
+              discord: {
+                bg: '#1e1f22',
+                panel: '#2b2d31',
+                card: '#313338',
+                border: '#3f4147',
+                accent: '#5865f2',
+                text: '#f2f3f5',
+                muted: '#b5bac1',
+                ok: '#23a55a',
+              },
+            },
+            boxShadow: {
+              discord: '0 20px 60px rgba(0, 0, 0, 0.35)',
+            },
+          },
+        },
+      }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>frontend</title>
   </head>
   <body>
