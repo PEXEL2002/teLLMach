@@ -47,6 +47,7 @@ services:
       - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}
       - SECRET_KEY=tellmach-super-secret-jwt-key-change-in-production
       - ENCRYPTION_KEY=LyIFaP_p1qkxGLd_6JctZzYhvvnSG5-K1mKJVCZLJdk=
+      - CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
     depends_on:
       postgres:
         condition: service_healthy
