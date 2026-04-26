@@ -5,6 +5,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 import os
 from qdrant_setup import ensure_qdrant_collection
+from routers.semantic_tool import router as semantic_tool_router
 
 DB_URL = os.getenv("DATABASE_URL", "postgresql://user:password@postgres:5432/tellmach")
 
@@ -16,6 +17,7 @@ engine = create_engine(
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 app = FastAPI(title="teLLMach API")
+app.include_router(semantic_tool_router)
 
 @app.on_event("startup")
 def startup_event():
