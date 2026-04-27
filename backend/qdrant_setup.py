@@ -27,7 +27,6 @@ def ensure_qdrant_collection() -> None:
         collection_name=QDRANT_COLLECTION,
         vectors_config=VectorParams(size=EMBEDDING_DIM, distance=distance),
     )
-    qdrant.create_payload_index(QDRANT_COLLECTION, "type", PayloadSchemaType.KEYWORD)
     qdrant.create_payload_index(QDRANT_COLLECTION, "city", PayloadSchemaType.KEYWORD)
     qdrant.create_payload_index(QDRANT_COLLECTION, "country", PayloadSchemaType.KEYWORD)
     qdrant.create_payload_index(QDRANT_COLLECTION, "rating", PayloadSchemaType.FLOAT)
