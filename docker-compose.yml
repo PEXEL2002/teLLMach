@@ -78,6 +78,25 @@ services:
         condition: service_healthy
     networks:
       - tellmach_network
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: tellmach_n8n
+    restart: always
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - WEBHOOK_URL=http://localhost:5678/
+      - GENERIC_TIMEZONE=Europe/Warsaw
+    volumes:
+      - n8n_data:/home/node/.n8n
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - tellmach_network
 networks:
   tellmach_network:
     driver: bridge
@@ -85,3 +104,4 @@ networks:
 volumes:
   postgres_data:
   qdrant_storage:
+  n8n_data:
