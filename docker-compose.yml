@@ -45,6 +45,13 @@ services:
       - ./backend:/app
     environment:
       - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}
+      - HF_TOKEN=${HF_TOKEN}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL}
+      - EMBEDDING_DIM=${EMBEDDING_DIM}
+      - QDRANT_HOST=${QDRANT_HOST}
+      - QDRANT_PORT=${QDRANT_PORT}
+      - QDRANT_COLLECTION=${QDRANT_COLLECTION}
+      - QDRANT_DISTANCE=${QDRANT_DISTANCE}
       - SECRET_KEY=tellmach-super-secret-jwt-key-change-in-production
       - ENCRYPTION_KEY=LyIFaP_p1qkxGLd_6JctZzYhvvnSG5-K1mKJVCZLJdk=
       - CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
