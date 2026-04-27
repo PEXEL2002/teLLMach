@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from schemas.search_schema import IndexDocumentsRequest, SearchRequest, SearchResponse
-from retrieval import index_documents, semantic_search
+from services.retrieval import index_documents, semantic_search
 
 router = APIRouter(prefix="/tools", tags=["tools"])
 
@@ -21,3 +21,4 @@ def semantic_search_endpoint(req: SearchRequest):
         return SearchResponse(query=req.query, top_k=req.top_k, hits=hits)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+

@@ -1,7 +1,7 @@
 from typing import Any, Dict, List, Optional
 from qdrant_client.models import PointStruct, Filter, FieldCondition, MatchValue
 from qdrant_setup import qdrant, QDRANT_COLLECTION
-from embeddings import embed_query, embed_texts
+from services.embeddings import embed_query, embed_texts
 
 
 def _build_filter(filters: Optional[Dict[str, Any]]) -> Optional[Filter]:

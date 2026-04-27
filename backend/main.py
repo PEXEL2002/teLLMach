@@ -6,6 +6,7 @@ from sqlalchemy.orm import sessionmaker, Session
 import os
 from qdrant_setup import ensure_qdrant_collection
 from routers.semantic_tool import router as semantic_tool_router
+from config.semantic_search_config import ensure_seed_places
 
 DB_URL = os.getenv("DATABASE_URL", "postgresql://user:password@postgres:5432/tellmach")
 
@@ -22,7 +23,7 @@ app.include_router(semantic_tool_router)
 @app.on_event("startup")
 def startup_event():
     ensure_qdrant_collection()
-
+    ensure_seed_places()
 
 allowed_origins = [
     origin.strip()
