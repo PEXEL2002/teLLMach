@@ -8,7 +8,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -52,6 +52,9 @@ services:
       - QDRANT_PORT=${QDRANT_PORT}
       - QDRANT_COLLECTION=${QDRANT_COLLECTION}
       - QDRANT_DISTANCE=${QDRANT_DISTANCE}
+      - SECRET_KEY=tellmach-super-secret-jwt-key-change-in-production
+      - ENCRYPTION_KEY=LyIFaP_p1qkxGLd_6JctZzYhvvnSG5-K1mKJVCZLJdk=
+      - CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
     depends_on:
       postgres:
         condition: service_healthy

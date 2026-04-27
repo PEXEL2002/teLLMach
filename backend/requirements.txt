@@ -9,3 +9,9 @@ pydantic-settings==2.1.0
 python-dotenv==1.0.1
 sentence-transformers
 torch
+pydantic-settings==2.1.0
+passlib[bcrypt]==1.7.4
+pydantic[email]==2.5.3
+bcrypt==4.1.2
+PyJWT==2.12.1
+cryptography==41.0.7
