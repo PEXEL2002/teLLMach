@@ -1,7 +1,6 @@
 from typing import Any, Dict, List, Optional
 from qdrant_client.models import PointStruct, Filter, FieldCondition, MatchValue
 from .qdrant_service import qdrant, QDRANT_COLLECTION
-from .embeddings import embed_query, embed_texts
 
 
 def _build_filter(filters: Optional[Dict[str, Any]]) -> Optional[Filter]:
@@ -17,6 +16,8 @@ def _build_filter(filters: Optional[Dict[str, Any]]) -> Optional[Filter]:
 
 def index_documents(documents: List[Dict[str, Any]]) -> int:
     """Index documents into Qdrant collection"""
+    from .embeddings import embed_texts
+
     texts = [doc["text"] for doc in documents]
     vectors = embed_texts(texts)
 
@@ -41,6 +42,8 @@ def semantic_search(
     filters: Optional[Dict[str, Any]] = None,
 ) -> List[Dict[str, Any]]:
     """Perform semantic search in Qdrant collection"""
+    from .embeddings import embed_query
+
     vector = embed_query(query)
     qdrant_filter = _build_filter(filters)
 
