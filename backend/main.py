@@ -3,10 +3,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 import os
-from typing import Optional
-from pydantic import BaseModel
-import uuid
 
+from qdrant_setup import ensure_qdrant_collection
+from routers.semantic_tool import router as semantic_tool_router
+from config.semantic_search_config import ensure_seed_places
+from typing import Optional
 from database import engine, SessionLocal, Base
 from models import User, Miejsca
 from schemas import UserCreate, UserOut, PlaceCreate, PlaceOut, Token
@@ -16,6 +17,12 @@ from auth import hash_password, verify_password, create_access_token, verify_tok
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="teLLMach API")
+app.include_router(semantic_tool_router)
+
+@app.on_event("startup")
+def startup_event():
+    ensure_qdrant_collection()
+    ensure_seed_places()
 
 # CORS configuration
 allowed_origins = [
