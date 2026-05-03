@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import os
 
 from config import CORS_ORIGINS, API_TITLE
 from database import engine
@@ -42,5 +43,9 @@ app.add_middleware(
 def startup_event() -> None:
     """Initialize services on startup"""
     ensure_qdrant_collection()
-    ensure_seed_places()
+
+    # Only seed places if embeddings model is enabled
+    load_embeddings = os.getenv("LOAD_EMBEDDINGS_MODEL", "false").lower() == "true"
+    if load_embeddings:
+        ensure_seed_places()
 

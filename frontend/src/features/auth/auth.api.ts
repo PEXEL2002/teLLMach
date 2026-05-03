@@ -1,14 +1,19 @@
 import type { LoginPayload, RegisterPayload, SessionUser, TokenResponse } from './auth.types'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+const API_ORIGIN = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+const API_URL = `${API_ORIGIN}/api/v1/auth`
 
 export const authApi = {
   async login(payload: LoginPayload): Promise<TokenResponse> {
-    const response = await fetch(`${API_URL}/login?email=${encodeURIComponent(payload.email)}&password=${encodeURIComponent(payload.password)}`, {
+    const response = await fetch(`${API_URL}/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
+      body: JSON.stringify({
+        email: payload.email,
+        password: payload.password,
+      }),
     })
 
     if (!response.ok) {

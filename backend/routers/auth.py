@@ -1,11 +1,17 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from pydantic import BaseModel
 from schemas import UserCreate, UserOut, Token
 from core import get_db, get_current_user
 from services import UserService
 from utils import UserAlreadyExistsException, InvalidCredentialsException
 
 router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
+
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
 
 
 @router.post("/register", response_model=UserOut, status_code=status.HTTP_201_CREATED)
@@ -23,12 +29,11 @@ def register(
 
 @router.post("/login", response_model=Token)
 def login(
-    email: str,
-    password: str,
+    login_data: LoginRequest,
     db: Session = Depends(get_db),
 ) -> Token:
     """Login with email and password - returns JWT token"""
-    token_data = UserService.authenticate_user(db, email, password)
+    token_data = UserService.authenticate_user(db, login_data.email, login_data.password)
 
     if not token_data:
         raise InvalidCredentialsException()

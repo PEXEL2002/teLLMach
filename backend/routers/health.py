@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from core import get_db
 from utils import get_health_status
+from models import User
 
 router = APIRouter(prefix="/api/v1", tags=["health"])
 

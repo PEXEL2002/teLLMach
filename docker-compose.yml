@@ -52,8 +52,8 @@ services:
       - QDRANT_PORT=${QDRANT_PORT}
       - QDRANT_COLLECTION=${QDRANT_COLLECTION}
       - QDRANT_DISTANCE=${QDRANT_DISTANCE}
-      - SECRET_KEY=tellmach-super-secret-jwt-key-change-in-production
-      - ENCRYPTION_KEY=LyIFaP_p1qkxGLd_6JctZzYhvvnSG5-K1mKJVCZLJdk=
+      - SECRET_KEY=${SECRET_KEY}
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY}
       - CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
     depends_on:
       postgres:

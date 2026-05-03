@@ -1,7 +1,8 @@
 import { getToken } from '../auth/auth.storage'
 import type { ChatResponse } from './chat.types'
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
+const API_ORIGIN = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+const API_BASE = `${API_ORIGIN}/api/v1`
 
 export const chatApi = {
   async sendMessage(message: string): Promise<ChatResponse> {
