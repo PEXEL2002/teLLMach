@@ -33,6 +33,15 @@
             boxShadow: {
               discord: '0 20px 60px rgba(0, 0, 0, 0.35)',
             },
+            animation: {
+              'fade-in': 'fadeIn 300ms ease-in-out forwards',
+            },
+            keyframes: {
+              fadeIn: {
+                '0%': { opacity: '0', transform: 'translateY(8px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              },
+            },
           },
         },
       }

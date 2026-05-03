@@ -1,3 +1,5 @@
+import { ChatInterface } from '../chat'
+
 type DashboardViewProps = {
   userName: string
   onLogout: () => void
@@ -5,20 +7,29 @@ type DashboardViewProps = {
 
 export function DashboardView({ userName, onLogout }: DashboardViewProps) {
   return (
-    <main className="min-h-screen bg-discord-bg p-6 text-discord-text">
-      <section className="auth-card mx-auto flex min-h-[calc(100vh-3rem)] w-full max-w-3xl flex-col items-center justify-center rounded-3xl border border-discord-border bg-discord-panel/90 p-10 text-center shadow-discord backdrop-blur">
-        <p className="mb-3 text-sm uppercase tracking-[0.18em] text-discord-muted">Dashboard</p>
-        <h1 className="mb-4 text-4xl font-bold md:text-5xl">Witaj, {userName}</h1>
-        <p className="max-w-xl text-base text-discord-muted md:text-lg">
-          Logowanie przebieglo poprawnie. To jest mockowany dashboard dostepu uzytkownika.
-        </p>
-        <button
-          type="button"
-          className="mt-8 rounded-xl bg-discord-accent px-5 py-3 text-sm font-semibold text-white transition hover:brightness-110"
-          onClick={onLogout}
-        >
-          Wyloguj
-        </button>
+    <main className="grid h-screen max-h-screen place-items-center overflow-hidden bg-discord-bg p-5 text-discord-text">
+      <div className="atmo-bg" aria-hidden="true" />
+
+      <section className="auth-card relative z-10 flex flex-col w-full max-w-4xl max-h-screen rounded-3xl border border-discord-border bg-discord-panel/95 shadow-discord overflow-hidden">
+        {/* Header with User Info */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-discord-border bg-discord-panel/80">
+          <div>
+            <h1 className="text-xl font-semibold text-discord-text">Witaj, {userName}</h1>
+            <p className="text-xs text-discord-muted mt-1">AI Travel Assistant</p>
+          </div>
+          <button
+            type="button"
+            className="px-4 py-2 text-sm font-medium text-discord-muted hover:text-discord-text border border-discord-border rounded-lg transition hover:bg-discord-panel/50"
+            onClick={onLogout}
+          >
+            Wyloguj
+          </button>
+        </div>
+
+        {/* Chat Interface */}
+        <div className="flex-1 overflow-hidden">
+          <ChatInterface />
+        </div>
       </section>
     </main>
   )
