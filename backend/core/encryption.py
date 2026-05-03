@@ -2,6 +2,7 @@ from cryptography.fernet import Fernet
 import os
 from typing import Optional
 
+
 ENCRYPTION_KEY = os.getenv("ENCRYPTION_KEY", "").encode()
 
 # If no key provided, generate one (for testing only)

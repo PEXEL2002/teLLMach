@@ -1,10 +1,11 @@
 from typing import Any, Dict, List, Optional
 from qdrant_client.models import PointStruct, Filter, FieldCondition, MatchValue
-from qdrant_setup import qdrant, QDRANT_COLLECTION
-from services.embeddings import embed_query, embed_texts
+from .qdrant_service import qdrant, QDRANT_COLLECTION
+from .embeddings import embed_query, embed_texts
 
 
 def _build_filter(filters: Optional[Dict[str, Any]]) -> Optional[Filter]:
+    """Build Qdrant filter from filter dict"""
     if not filters:
         return None
 
@@ -15,6 +16,7 @@ def _build_filter(filters: Optional[Dict[str, Any]]) -> Optional[Filter]:
 
 
 def index_documents(documents: List[Dict[str, Any]]) -> int:
+    """Index documents into Qdrant collection"""
     texts = [doc["text"] for doc in documents]
     vectors = embed_texts(texts)
 
@@ -33,7 +35,12 @@ def index_documents(documents: List[Dict[str, Any]]) -> int:
     return len(points)
 
 
-def semantic_search(query: str, top_k: int = 5, filters: Optional[Dict[str, Any]] = None):
+def semantic_search(
+    query: str,
+    top_k: int = 5,
+    filters: Optional[Dict[str, Any]] = None,
+) -> List[Dict[str, Any]]:
+    """Perform semantic search in Qdrant collection"""
     vector = embed_query(query)
     qdrant_filter = _build_filter(filters)
 

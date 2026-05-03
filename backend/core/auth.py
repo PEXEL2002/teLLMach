@@ -13,14 +13,20 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 
 def hash_password(password: str) -> str:
+    """Hash password using bcrypt"""
     return pwd_context.hash(password)
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """Verify password against hashed password"""
     return pwd_context.verify(plain_password, hashed_password)
 
 
-def create_access_token(user_id: int, email: str, expires_delta: Optional[timedelta] = None) -> str:
+def create_access_token(
+    user_id: int,
+    email: str,
+    expires_delta: Optional[timedelta] = None,
+) -> str:
     """Generate JWT access token"""
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
@@ -32,7 +38,7 @@ def create_access_token(user_id: int, email: str, expires_delta: Optional[timede
         "email": email,
         "exp": expire,
         "iat": datetime.utcnow(),
-        "2fa_verified": False
+        "2fa_verified": False,
     }
 
     encoded_jwt = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)

@@ -19,6 +19,7 @@ qdrant = QdrantClient(host=QDRANT_HOST, port=QDRANT_PORT)
 
 
 def ensure_qdrant_collection() -> None:
+    """Ensure Qdrant collection exists with proper schema"""
     existing = {c.name for c in qdrant.get_collections().collections}
     if QDRANT_COLLECTION in existing:
         return

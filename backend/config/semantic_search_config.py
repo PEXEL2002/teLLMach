@@ -1,4 +1,4 @@
-from qdrant_setup import qdrant, QDRANT_COLLECTION
+from services.qdrant_service import qdrant, QDRANT_COLLECTION
 from services.retrieval import index_documents
 
 SEED_PLACES = [
