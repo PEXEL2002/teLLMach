@@ -14,7 +14,7 @@ services:
     networks:
       - tellmach_network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -37,12 +37,16 @@ services:
       retries: 5
       start_period: 20s
   backend:
-    build: ./backend 
+    build: ./backend
     container_name: tellmach_app_backend
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     ports:
       - "8000:8000"
     volumes:
       - ./backend:/app
+      - hf_cache:/root/.cache/huggingface
     environment:
       - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}
       - HF_TOKEN=${HF_TOKEN}
@@ -55,6 +59,7 @@ services:
       - SECRET_KEY=tellmach-super-secret-jwt-key-change-in-production
       - ENCRYPTION_KEY=LyIFaP_p1qkxGLd_6JctZzYhvvnSG5-K1mKJVCZLJdk=
       - CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
+      - N8N_WEBHOOK_URL=${N8N_WEBHOOK_URL:-}
     depends_on:
       postgres:
         condition: service_healthy
@@ -81,6 +86,22 @@ services:
         condition: service_healthy
     networks:
       - tellmach_network
+  n8n:
+    image: docker.n8n.io/n8nio/n8n
+    container_name: tellmach_n8n
+    restart: unless-stopped
+    ports:
+      - "5679:5678"
+    environment:
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - GENERIC_TIMEZONE=Europe/Warsaw
+      - N8N_USER_MANAGEMENT_JWT_SECRET=${N8N_JWT_SECRET:-tellmach-n8n-jwt-secret-change-me}
+    volumes:
+      - n8n_data:/home/node/.n8n
+    networks:
+      - tellmach_network
 networks:
   tellmach_network:
     driver: bridge
@@ -88,3 +109,5 @@ networks:
 volumes:
   postgres_data:
   qdrant_storage:
+  n8n_data:
+  hf_cache:

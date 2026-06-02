@@ -40,4 +40,3 @@ export const clearSession = (): void => {
   localStorage.removeItem(AUTH_SESSION_KEY)
   localStorage.removeItem(AUTH_TOKEN_KEY)
 }
-

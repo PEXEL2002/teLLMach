@@ -1,15 +1,20 @@
 from fastapi import FastAPI, Depends, HTTPException, status, Header
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 import os
+import uuid
+import json
+import httpx
 
 from qdrant_setup import ensure_qdrant_collection
 from routers.semantic_tool import router as semantic_tool_router
 from config.semantic_search_config import ensure_seed_places
 from typing import Optional
 from database import engine, SessionLocal, Base
-from models import User, Miejsca
+from models import User, Miejsca, Message
 from schemas import UserCreate, UserOut, PlaceCreate, PlaceOut, Token
 from auth import hash_password, verify_password, create_access_token, verify_token
 
@@ -55,6 +60,20 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     id: str
     content: str
+
+
+class MessageSaveRequest(BaseModel):
+    messages: list[dict]  # [{role, content, timestamp}]
+
+
+class MessageOut(BaseModel):
+    id: int
+    role: str
+    content: str
+    created_at: str
+
+    class Config:
+        from_attributes = True
 
 
 def get_current_user(authorization: Optional[str] = Header(None), db: Session = Depends(get_db)) -> User:
@@ -180,33 +199,64 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
     return user
 
 
-@app.post("/api/chat", response_model=ChatResponse)
-def chat(chat_request: ChatRequest, current_user: User = Depends(get_current_user)):
-    """AI Travel Assistant chat endpoint - sends message and receives response"""
+N8N_WEBHOOK_URL = os.getenv("N8N_WEBHOOK_URL", "")
+
+@app.post("/api/chat")
+async def chat(chat_request: ChatRequest, current_user: User = Depends(get_current_user)):
+    """AI Travel Assistant — streaming proxy do n8n webhook"""
     message = chat_request.message.strip()
 
     if not message:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Message cannot be empty"
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Message cannot be empty")
 
-    # Placeholder AI response - in production this would call an LLM service
-    responses = {
-        "gdzie": "Mogę Ci pomóc zaplanować podróż! Gdzie chciałbyś pojechać?",
-        "pogoda": "Aby sprawdzić pogodę w konkretnym miejscu, powiedz mi gdzie Cię interesuje.",
-        "hotel": "Chętnie pomogę Ci znaleźć hotel. Powiedz mi jakie są Twoje preferencje i budżet.",
-        "loty": "Mogę Ci pomóc znaleźć loty. Powiedz mi skąd i dokąd chcesz lecieć oraz kiedy.",
-        "atrakcje": "Jakie atrakcje Cię interesują? Mogę zasugerować wiele fajnych miejsc.",
-    }
+    if not N8N_WEBHOOK_URL:
+        async def _fallback():
+            yield f"data: {json.dumps({'output': 'Skonfiguruj N8N_WEBHOOK_URL.'})}\n\ndata: [DONE]\n\n"
+        return StreamingResponse(_fallback(), media_type="text/event-stream")
 
-    # Simple keyword matching for demo purposes
-    response_content = next(
-        (v for k, v in responses.items() if k in message.lower()),
-        f"Interesująca wiadomość! Rozumiem, że mówisz o: \"{message}\". Mogę Ci pomóc w planowaniu podróży."
+    payload = {"message": message, "user_id": current_user.id, "email": current_user.email}
+
+    async def _stream_n8n():
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            async with client.stream("POST", N8N_WEBHOOK_URL, json=payload) as resp:
+                resp.raise_for_status()
+                async for chunk in resp.aiter_bytes():
+                    if chunk:
+                        yield chunk
+
+    return StreamingResponse(
+        _stream_n8n(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
 
-    return ChatResponse(
-        id=str(uuid.uuid4()),
-        content=response_content
+
+@app.get("/api/history", response_model=list[MessageOut])
+def get_history(
+    limit: int = 100,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    rows = (
+        db.query(Message)
+        .filter(Message.user_id == current_user.id)
+        .order_by(Message.created_at.asc())
+        .limit(limit)
+        .all()
     )
+    return [
+        MessageOut(id=r.id, role=r.role, content=r.content, created_at=r.created_at.isoformat())
+        for r in rows
+    ]
+
+
+@app.post("/api/history", status_code=201)
+def save_messages(
+    body: MessageSaveRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    for m in body.messages:
+        db.add(Message(user_id=current_user.id, role=m["role"], content=m["content"]))
+    db.commit()
+    return {"saved": len(body.messages)}

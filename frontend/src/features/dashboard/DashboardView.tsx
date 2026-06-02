@@ -10,7 +10,7 @@ export function DashboardView({ userName, onLogout }: DashboardViewProps) {
     <main className="grid h-screen max-h-screen place-items-center overflow-hidden bg-discord-bg p-5 text-discord-text">
       <div className="atmo-bg" aria-hidden="true" />
 
-      <section className="auth-card relative z-10 flex flex-col w-full max-w-4xl max-h-screen rounded-3xl border border-discord-border bg-discord-panel/95 shadow-discord overflow-hidden">
+      <section className="auth-card relative z-10 flex flex-col w-full max-w-4xl h-[calc(100vh-2.5rem)] rounded-3xl border border-discord-border bg-discord-panel/95 shadow-discord overflow-hidden">
         {/* Header with User Info */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-discord-border bg-discord-panel/80">
           <div>

@@ -15,3 +15,5 @@ pydantic[email]==2.5.3
 bcrypt==4.1.2
 PyJWT==2.12.1
 cryptography==41.0.7
+requests==2.31.0
+httpx==0.27.0
